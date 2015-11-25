@@ -1,12 +1,15 @@
-var WIDTH;
-var HEIGHT;
-var BOARD;
+// Remain constant throughout the entire session
 var UP = 0;
 var RIGHT = 1;
 var DOWN = 2;
 var LEFT = 3;
 var PLAY = 4;
 var PAUSE = 5;
+// Remain constant through a game, but can change between games
+var WIDTH;
+var HEIGHT;
+var BOARD;
+// Change constantly throughout a game
 var direction;
 var length;
 var body;
@@ -20,6 +23,16 @@ function Point(x, y) {
   this.x = x;
   this.y = y;
 }
+
+Point.prototype.toString = function() {
+  return '(' + this.x + ', ' + this.y + ')';
+};
+
+Point.fromString = function(s) {
+  var x = s.substring(1, s.indexOf(','));
+  var y = s.substring(s.indexOf(' '), s.length - 1);
+  return new Point(x, y);
+};
 
 function Queue() {
   this.data = [];
