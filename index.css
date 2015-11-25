@@ -1,0 +1,43 @@
+body {
+    background-color: #EEEEEE;
+}
+
+table, td {
+    border: none;
+    border-collapse: collapse;
+}
+
+table {
+    margin: 0 auto;
+    background-color: #FFFFFF;
+}
+
+td {
+    width: 8px;
+    height: 8px;
+    background-color: #FFFFFF;
+}
+
+.active {
+    /*background-color: #006699;*/
+}
+
+.inactive {
+    /*background-color: #FFFFFF;*/
+}
+
+.point {
+    /*background-color: #0C3110;*/
+}
+
+#speed {
+    width: 100px;
+}
+
+.inner {
+    display: inline-block;
+}
+
+.outer {
+    text-align: center;
+}
