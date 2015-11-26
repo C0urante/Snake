@@ -18,26 +18,23 @@ td {
     background-color: #FFFFFF;
 }
 
-.active {
-    /*background-color: #006699;*/
+.empty {
 }
 
-.inactive {
-    /*background-color: #FFFFFF;*/
+.snake {
 }
 
 .point {
-    /*background-color: #0C3110;*/
 }
 
-#speed {
+.speed_selector {
     width: 100px;
 }
 
-.inner {
+.horizontal_center_inner {
     display: inline-block;
 }
 
-.outer {
+.horizontal_center_outer {
     text-align: center;
 }

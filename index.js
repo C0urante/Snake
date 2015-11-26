@@ -5,6 +5,10 @@ var DOWN = 2;
 var LEFT = 3;
 var PLAY = 4;
 var PAUSE = 5;
+var INIT_LENGTH = 5;
+var LENGTH_DELTA = 5;
+var MAX_OPACITY = 0.5;
+var OPACITY_CYCLE = 10;
 // Remain constant through a game, but can change between games
 var WIDTH;
 var HEIGHT;
@@ -73,7 +77,7 @@ function resetBoard() {
   WIDTH = width;
   HEIGHT = height;
   direction = DOWN;
-  length = 5;
+  length = INIT_LENGTH;
   score = 0;
   position = new Point(0, 0);
   body = new Queue();
@@ -87,36 +91,38 @@ function resetBoard() {
     BOARD.push([]);
     for (var x = 0; x < width; x++) {
       var square = $('<td />', {
-        'class': 'inactive'
+        'class': 'empty'
       });
       row.append(square);
       BOARD[y].push(square);
     }
     boardElement.append(row);
   }
-  setActive(position);
+  setSnake(position);
   createNewPoint();
 }
 
-function setActive(point) {
+function setSnake(point) {
   var green = Math.floor(point.x * 256 / WIDTH);
   var blue = Math.floor(point.y * 256 / HEIGHT);
   var color = 'rgb(127, ' + green + ', ' + blue + ')';
-  return BOARD[point.y][point.x].removeClass().addClass('active').
+  return BOARD[point.y][point.x].removeClass().addClass('snake').
                                  css('background-color', color);
 }
 
-function setInactive(point) {
+function setEmpty(point) {
   var square = BOARD[point.y][point.x];
-  if (square.hasClass('active')) {
+  if (square.hasClass('snake')) {
     var green = Math.floor(point.x * 256 / WIDTH);
     var blue = Math.floor(point.y * 256 / HEIGHT);
-    var opacity = ((length - 5) % 128) / 256;
+    var opacity = MAX_OPACITY *
+                  (score % OPACITY_CYCLE) /
+                  (OPACITY_CYCLE - 1);
     var color = 'rgba(127,' + green + ', ' + blue + ', ' + opacity + ')';
-    return square.removeClass().addClass('inactive').
+    return square.removeClass().addClass('empty').
                                 css('background-color', color);
   } else {
-    return square.removeClass().addClass('inactive').
+    return square.removeClass().addClass('empty').
                                 css('background-color', 'rgb(255, 255, 255)');
   }
 }
@@ -139,7 +145,7 @@ function createNewPoint() {
   var y = randRange(0, HEIGHT);
   var xStart = x;
   var yStart = y;
-  while (BOARD[y][x].hasClass('active')) {
+  while (BOARD[y][x].hasClass('snake')) {
     x++;
     if (x == WIDTH) {
       x = 0;
@@ -159,7 +165,7 @@ function createNewPoint() {
 function tick() {
   if (body.length() >= length) {
     var p = body.poll();
-    setInactive(p);
+    setEmpty(p);
   }
   var x = position.x;
   var y = position.y;
@@ -180,17 +186,17 @@ function tick() {
       alert('Fatal error: invalid direction: ' + direction);
       return;
   }
-  if (BOARD[y][x].hasClass('active')) {
+  if (BOARD[y][x].hasClass('snake')) {
     alert('You lose!');
     resetBoard();
     return;
   }
   var scored = BOARD[y][x].hasClass('point');
   var newPos = new Point(x, y);
-  setActive(newPos);
+  setSnake(newPos);
   if (scored) {
     if (createNewPoint()) {
-      length += 5;
+      length += LENGTH_DELTA;
       score++;
       document.title = 'Snake (' + score + ')';
     } else {
