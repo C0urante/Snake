@@ -335,15 +335,19 @@ function onKeyPress(event) {
   event.preventDefault();
 }
 
+function updateSpeed() {
+  speed = Math.floor(1000 / $('#speed').val());
+}
+
 function changeSpeed() {
   clearInterval(interval);
-  interval = setInterval(tick, 1000 - speed + 1);
+  interval = setInterval(tick, speed);
   state = PLAY;
 }
 
 function onReady() {
-  speed = $('#speed').val();
   reset();
+  updateSpeed();
   changeSpeed();
   $(document).keydown(onKeyDown);
   $(document).keypress(onKeyPress);
