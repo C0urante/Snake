@@ -168,7 +168,7 @@ function setEmptySquare(point) {
   }
 }
 
-function setPointSquare(point) {
+function setTarget(point) {
   return BOARD[point.y][point.x].removeClass().addClass('point').
                                  css('background-color', 'rgb(255, 0, 0)');
 }
@@ -203,11 +203,11 @@ function getEmptySquare() {
 }
 
 function createNewPoint() {
-  var pointSquare = getEmptySquare();
-  if (pointSquare === null) {
+  var target = getEmptySquare();
+  if (target === null) {
     return false;
   } else {
-    setPointSquare(pointSquare);
+    setTarget(target);
     return true;
   }
 }
