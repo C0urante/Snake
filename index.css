@@ -5,17 +5,16 @@ body {
 table, td {
     border: none;
     border-collapse: collapse;
+    background-color: #FFFFFF;
 }
 
 table {
     margin: 0 auto;
-    background-color: #FFFFFF;
 }
 
 td {
     width: 8px;
     height: 8px;
-    background-color: #FFFFFF;
 }
 
 .speed_selector {
