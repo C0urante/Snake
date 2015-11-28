@@ -1,14 +1,14 @@
 // Remain constant throughout the entire session
-var UP = 0;
-var RIGHT = 1;
-var DOWN = 2;
-var LEFT = 3;
-var PLAY = 4;
-var PAUSE = 5;
-var INIT_LENGTH = 5;
-var LENGTH_DELTA = 5;
-var MAX_OPACITY = 0.5;
-var OPACITY_CYCLE = 10;
+const UP = 0;
+const RIGHT = 1;
+const DOWN = 2;
+const LEFT = 3;
+const PLAY = 4;
+const PAUSE = 5;
+const INIT_LENGTH = 5;
+const LENGTH_DELTA = 5;
+const MAX_OPACITY = 0.5;
+const OPACITY_CYCLE = 10;
 // Remain constant through a game, but can change between games
 var WIDTH;
 var HEIGHT;
@@ -28,6 +28,23 @@ function Point(x, y) {
   this.y = y;
 }
 
+Point.prototype.clone = function() {
+  return new Point(this.x, this.y);
+};
+
+Point.prototype.setX = function(x) {
+  this.x = x;
+};
+
+Point.prototype.setY = function(y) {
+  this.y = y;
+};
+
+Point.prototype.setAll = function(x, y) {
+  this.setY(x);
+  this.setX(y);
+};
+
 Point.prototype.toString = function() {
   return '(' + this.x + ', ' + this.y + ')';
 };
@@ -40,27 +57,31 @@ Point.fromString = function(s) {
 
 function Queue() {
   this.data = [];
-  this.offer = function(e) {
-    return this.data.push(e);
-  };
-  this.poll = function() {
-    if (this.data.length > 0) {
-      return this.data.shift();
-    } else {
-      return null;
-    }
-  };
-  this.peek = function() {
-    if (this.data.length > 0) {
-      return this.data[0];
-    } else {
-      return null;
-    }
-  };
-  this.length = function() {
-    return this.data.length;
-  };
 }
+
+Queue.prototype.offer = function(e) {
+  return this.data.push(e);
+};
+
+Queue.prototype.poll = function() {
+  if (this.data.length > 0) {
+    return this.data.shift();
+  } else {
+    return null;
+  }
+};
+
+Queue.prototype.peek = function() {
+  if (this.data.length > 0) {
+    return this.data[0];
+  } else {
+    return null;
+  }
+};
+
+Queue.prototype.length = function() {
+  return this.data.length;
+};
 
 function resetBoard() {
   var widthElement = $('#width');
@@ -162,38 +183,44 @@ function createNewPoint() {
   return true;
 }
 
-function tick() {
+function truncateBody() {
   if (body.length() >= length) {
-    var p = body.poll();
-    setEmpty(p);
+    setEmpty(body.poll());
   }
+}
+
+function updatePosition() {
   var x = position.x;
   var y = position.y;
   switch (direction) {
     case UP:
-      y = mod(y - 1, HEIGHT);
+      position.setY(mod(position.y - 1, HEIGHT));
       break;
     case RIGHT:
-      x = mod(x + 1, WIDTH);
+      position.setX(mod(position.x + 1, WIDTH));
       break;
     case DOWN:
-      y = mod(y + 1, HEIGHT);
+      position.setY(mod(position.y + 1, HEIGHT));
       break;
     case LEFT:
-      x = mod(x - 1, WIDTH);
+      position.setX(mod(position.x - 1, WIDTH));
       break;
     default:
       alert('Fatal error: invalid direction: ' + direction);
       return;
   }
+}
+
+function checkNewPosition() {
+  var x = position.x;
+  var y = position.y;
   if (BOARD[y][x].hasClass('snake')) {
     alert('You lose!');
     resetBoard();
     return;
   }
   var scored = BOARD[y][x].hasClass('point');
-  var newPos = new Point(x, y);
-  setSnake(newPos);
+  setSnake(position);
   if (scored) {
     if (createNewPoint()) {
       length += LENGTH_DELTA;
@@ -205,9 +232,34 @@ function tick() {
       return;
     }
   }
-  body.offer(newPos);
-  position.x = x;
-  position.y = y;
+}
+
+function tick() {
+  truncateBody();
+  updatePosition();
+  checkNewPosition();
+  // var x = position.x;
+  // var y = position.y;
+  // if (BOARD[y][x].hasClass('snake')) {
+  //   alert('You lose!');
+  //   resetBoard();
+  //   return;
+  // }
+  // var scored = BOARD[y][x].hasClass('point');
+  // var newPos = new Point(x, y);
+  // setSnake(newPos);
+  // if (scored) {
+  //   if (createNewPoint()) {
+  //     length += LENGTH_DELTA;
+  //     score++;
+  //     document.title = 'Snake (' + score + ')';
+  //   } else {
+  //     alert('You win!');
+  //     resetBoard();
+  //     return;
+  //   }
+  // }
+  body.offer(position.clone());
 }
 
 function onKeyDown(event) {
@@ -215,6 +267,7 @@ function onKeyDown(event) {
     return;
   }
   switch (event.which) {
+    case 'A'.charCodeAt(0):
     case 37:
       if (direction != RIGHT && direction != LEFT) {
         direction = LEFT;
@@ -222,6 +275,7 @@ function onKeyDown(event) {
         return;
       }
       break;
+    case 'W'.charCodeAt(0):
     case 38:
       if (direction != DOWN && direction != UP) {
         direction = UP;
@@ -229,6 +283,7 @@ function onKeyDown(event) {
         return;
       }
       break;
+    case 'D'.charCodeAt(0):
     case 39:
       if (direction != LEFT && direction != RIGHT) {
         direction = RIGHT;
@@ -236,6 +291,7 @@ function onKeyDown(event) {
         return;
       }
       break;
+    case 'S'.charCodeAt(0):
     case 40:
       if (direction != UP && direction != DOWN) {
         direction = DOWN;
