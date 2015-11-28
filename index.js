@@ -238,27 +238,6 @@ function tick() {
   truncateBody();
   updatePosition();
   checkNewPosition();
-  // var x = position.x;
-  // var y = position.y;
-  // if (BOARD[y][x].hasClass('snake')) {
-  //   alert('You lose!');
-  //   resetBoard();
-  //   return;
-  // }
-  // var scored = BOARD[y][x].hasClass('point');
-  // var newPos = new Point(x, y);
-  // setSnake(newPos);
-  // if (scored) {
-  //   if (createNewPoint()) {
-  //     length += LENGTH_DELTA;
-  //     score++;
-  //     document.title = 'Snake (' + score + ')';
-  //   } else {
-  //     alert('You win!');
-  //     resetBoard();
-  //     return;
-  //   }
-  // }
   body.offer(position.clone());
 }
 
