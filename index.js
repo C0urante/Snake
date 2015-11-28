@@ -8,7 +8,7 @@ const PAUSE = 5;
 const INIT_LENGTH = 5;
 const LENGTH_DELTA = 5;
 const MAX_OPACITY = 0.5;
-const OPACITY_CYCLE = 10;
+const OPACITY_CYCLE = 25;
 // Remain constant through a game, but can change between games
 var WIDTH;
 var HEIGHT;
