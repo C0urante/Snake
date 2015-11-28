@@ -202,12 +202,12 @@ function getEmptySquare() {
   return new Point(x, y);
 }
 
-function createNewPoint() {
-  var target = getEmptySquare();
-  if (target === null) {
+function createNewTarget() {
+  var point = getEmptySquare();
+  if (point === null) {
     return false;
   } else {
-    setTargetSquare(target);
+    setTargetSquare(point);
     return true;
   }
 }
@@ -251,7 +251,7 @@ function checkNewPosition() {
   var scored = BOARD[y][x].hasClass('target');
   setSnakeSquare(position);
   if (scored) {
-    if (createNewPoint()) {
+    if (createNewTarget()) {
       length += LENGTH_DELTA;
       score++;
       document.title = 'Snake (' + score + ')';
