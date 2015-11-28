@@ -168,8 +168,8 @@ function setEmptySquare(point) {
   }
 }
 
-function setTarget(point) {
-  return BOARD[point.y][point.x].removeClass().addClass('point').
+function setTargetSquare(point) {
+  return BOARD[point.y][point.x].removeClass().addClass('target').
                                  css('background-color', 'rgb(255, 0, 0)');
 }
 
@@ -207,7 +207,7 @@ function createNewPoint() {
   if (target === null) {
     return false;
   } else {
-    setTarget(target);
+    setTargetSquare(target);
     return true;
   }
 }
@@ -248,7 +248,7 @@ function checkNewPosition() {
     reset();
     return;
   }
-  var scored = BOARD[y][x].hasClass('point');
+  var scored = BOARD[y][x].hasClass('target');
   setSnakeSquare(position);
   if (scored) {
     if (createNewPoint()) {
