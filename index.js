@@ -59,6 +59,12 @@ function Queue() {
   this.data = [];
 }
 
+Queue.prototype.clone = function() {
+  var result = new Queue();
+  result.data = this.data.slice();
+  return result;
+};
+
 Queue.prototype.offer = function(e) {
   return this.data.push(e);
 };
@@ -83,7 +89,7 @@ Queue.prototype.length = function() {
   return this.data.length;
 };
 
-function resetBoard() {
+function resetDimensions() {
   var widthElement = $('#width');
   var heightElement = $('#height');
   var width = parseInt(widthElement.val(), 10);
@@ -91,26 +97,32 @@ function resetBoard() {
   var maxWidth = parseInt(widthElement.attr('max'), 10);
   var maxHeight = parseInt(heightElement.attr('max'), 10);
   if (width > maxWidth || height > maxHeight) {
-    return;
+    return false;
+  } else {
+    WIDTH = width;
+    HEIGHT = height;
+    return true;
   }
+}
 
+function resetFields() {
   document.title = 'Snake';
-  WIDTH = width;
-  HEIGHT = height;
+  BOARD = [];
   direction = DOWN;
   length = INIT_LENGTH;
   score = 0;
-  position = new Point(0, 0);
   body = new Queue();
-  body.offer(new Point(0, 0));
-  BOARD = [];
+  position = new Point(0, 0);
+  body.offer(position.clone());
+}
 
+function resetBoard() {
   var boardElement = $('#board');
   boardElement.empty();
-  for (var y = 0; y < height; y++) {
+  for (var y = 0; y < HEIGHT; y++) {
     var row = $('<tr />');
     BOARD.push([]);
-    for (var x = 0; x < width; x++) {
+    for (var x = 0; x < WIDTH; x++) {
       var square = $('<td />', {
         'class': 'empty'
       });
@@ -119,11 +131,19 @@ function resetBoard() {
     }
     boardElement.append(row);
   }
-  setSnake(position);
+}
+
+function reset() {
+  if (!resetDimensions()) {
+    return;
+  }
+  resetFields();
+  resetBoard();
+  setSnakeSquare(position);
   createNewPoint();
 }
 
-function setSnake(point) {
+function setSnakeSquare(point) {
   var green = Math.floor(point.x * 256 / WIDTH);
   var blue = Math.floor(point.y * 256 / HEIGHT);
   var color = 'rgb(127, ' + green + ', ' + blue + ')';
@@ -131,7 +151,7 @@ function setSnake(point) {
                                  css('background-color', color);
 }
 
-function setEmpty(point) {
+function setEmptySquare(point) {
   var square = BOARD[point.y][point.x];
   if (square.hasClass('snake')) {
     var green = Math.floor(point.x * 256 / WIDTH);
@@ -148,7 +168,7 @@ function setEmpty(point) {
   }
 }
 
-function setPoint(point) {
+function setPointSquare(point) {
   return BOARD[point.y][point.x].removeClass().addClass('point').
                                  css('background-color', 'rgb(255, 0, 0)');
 }
@@ -161,7 +181,7 @@ function randRange(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-function createNewPoint() {
+function getEmptySquare() {
   var x = randRange(0, WIDTH);
   var y = randRange(0, HEIGHT);
   var xStart = x;
@@ -176,16 +196,25 @@ function createNewPoint() {
       }
     }
     if (x == xStart && y == yStart) {
-      return false;
+      return null;
     }
   }
-  setPoint(new Point(x, y));
-  return true;
+  return new Point(x, y);
+}
+
+function createNewPoint() {
+  var pointSquare = getEmptySquare();
+  if (pointSquare === null) {
+    return false;
+  } else {
+    setPointSquare(pointSquare);
+    return true;
+  }
 }
 
 function truncateBody() {
   if (body.length() >= length) {
-    setEmpty(body.poll());
+    setEmptySquare(body.poll());
   }
 }
 
@@ -216,11 +245,11 @@ function checkNewPosition() {
   var y = position.y;
   if (BOARD[y][x].hasClass('snake')) {
     alert('You lose!');
-    resetBoard();
+    reset();
     return;
   }
   var scored = BOARD[y][x].hasClass('point');
-  setSnake(position);
+  setSnakeSquare(position);
   if (scored) {
     if (createNewPoint()) {
       length += LENGTH_DELTA;
@@ -228,7 +257,7 @@ function checkNewPosition() {
       document.title = 'Snake (' + score + ')';
     } else {
       alert('You win!');
-      resetBoard();
+      reset();
       return;
     }
   }
@@ -301,8 +330,9 @@ function onKeyPress(event) {
       }
       break;
     default:
-      break;
+      return;
   }
+  event.preventDefault();
 }
 
 function changeSpeed() {
@@ -313,7 +343,7 @@ function changeSpeed() {
 
 function onReady() {
   speed = $('#speed').val();
-  resetBoard();
+  reset();
   changeSpeed();
   $(document).keydown(onKeyDown);
   $(document).keypress(onKeyPress);

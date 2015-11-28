@@ -12,9 +12,9 @@
         <div class="horizontal_center_inner">
             Width: <input type="number" id="width" min="1" max="64" value="50" />
             Height: <input type="number" id="height" min="1" max="64" value="50" />
-            <button onclick="resetBoard();">Resize</button>
+            <button onclick="reset();this.blur();">Resize</button>
             <br />
-            Speed: <input type="range" id="speed" class="speed_selector" min="700" max="1000" onchange="if(state === PLAY) speed=this.value;changeSpeed();" value="960"/>
+            Speed: <input type="range" id="speed" class="speed_selector" min="700" max="1000" onchange="if(state === PLAY) speed=this.value;changeSpeed();this.blur();" value="960"/>
         </div>
     </div>
     <br />
