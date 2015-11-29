@@ -1,10 +1,10 @@
 // Remain constant throughout the entire session
-const UP = 0;
-const RIGHT = 1;
-const DOWN = 2;
-const LEFT = 3;
-const PLAY = 4;
-const PAUSE = 5;
+const LEFT = 37;
+const UP = 38;
+const RIGHT = 39;
+const DOWN = 40;
+const PLAY = 1;
+const PAUSE = 2;
 const INIT_LENGTH = 5;
 const LENGTH_DELTA = 5;
 const MAX_OPACITY = 0.5;
@@ -90,8 +90,8 @@ Queue.prototype.length = function() {
 };
 
 function resetDimensions() {
-  var widthElement = $('#width');
-  var heightElement = $('#height');
+  var widthElement = $('#width_value');
+  var heightElement = $('#height_value');
   var width = parseInt(widthElement.val(), 10);
   var height = parseInt(heightElement.val(), 10);
   var maxWidth = parseInt(widthElement.attr('max'), 10);
@@ -140,7 +140,7 @@ function reset() {
   resetFields();
   resetBoard();
   setSnakeSquare(position);
-  createNewPoint();
+  createNewTarget();
 }
 
 function setSnakeSquare(point) {
@@ -276,7 +276,8 @@ function onKeyDown(event) {
   }
   switch (event.which) {
     case 'A'.charCodeAt(0):
-    case 37:
+    case 'a'.charCodeAt(0):
+    case LEFT:
       if (direction != RIGHT && direction != LEFT) {
         direction = LEFT;
       } else {
@@ -284,7 +285,8 @@ function onKeyDown(event) {
       }
       break;
     case 'W'.charCodeAt(0):
-    case 38:
+    case 'w'.charCodeAt(0):
+    case UP:
       if (direction != DOWN && direction != UP) {
         direction = UP;
       } else {
@@ -292,7 +294,8 @@ function onKeyDown(event) {
       }
       break;
     case 'D'.charCodeAt(0):
-    case 39:
+    case 'd'.charCodeAt(0):
+    case RIGHT:
       if (direction != LEFT && direction != RIGHT) {
         direction = RIGHT;
       } else {
@@ -300,7 +303,8 @@ function onKeyDown(event) {
       }
       break;
     case 'S'.charCodeAt(0):
-    case 40:
+    case 's'.charCodeAt(0):
+    case DOWN:
       if (direction != UP && direction != DOWN) {
         direction = DOWN;
       } else {
@@ -336,7 +340,7 @@ function onKeyPress(event) {
 }
 
 function updateSpeed() {
-  speed = Math.floor(1000 / $('#speed').val());
+  speed = Math.floor(1000 / $('#speed_value').val());
 }
 
 function changeSpeed() {

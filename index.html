@@ -7,18 +7,20 @@
 </head>
 <body>
     <table id="board"></table>
-    <br />
     <div class="horizontal_center_outer">
         <div class="horizontal_center_inner">
-            Width: <input type="number" id="width" min="1" max="64" value="50" />
-            Height: <input type="number" id="height" min="1" max="64" value="50" />
-            <button onclick="reset();this.blur();">Resize</button>
-            <br />
-            Speed: <input type="range" id="speed" class="speed_selector" min="1" max="50" onchange="if(state === PLAY) updateSpeed();changeSpeed();this.blur();" value="25"/>
+            <div class="dimension_selector">
+                Width: <input type="number" id="width_value" min="1" max="64" value="50" />
+                Height: <input type="number" id="height_value" min="1" max="64" value="50" />
+                <button onclick="reset();this.blur();">Resize</button>
+            </div>
+            <div id="speed_selector">
+                Speed: <input type="range" id="speed_value" min="1" max="50" onchange="updateSpeed(); if(state === PLAY) { changeSpeed(); } this.blur();" value="25"/>
+            </div>
         </div>
     </div>
-    <br />
-    <br />
-    Check out the GitHub repo <a href="https://github.com/C0urante/Snake">here</a>!
+    <footer>
+        Check out the <a href="https://github.com/C0urante/Snake">GitHub Repository</a>!
+    </footer>
 </body>
 </html>

@@ -17,7 +17,13 @@ td {
     height: 8px;
 }
 
-.speed_selector {
+footer {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+}
+
+#speed_value {
     width: 100px;
 }
 
@@ -27,4 +33,12 @@ td {
 
 .horizontal_center_outer {
     text-align: center;
+}
+
+.dimension_selector {
+    margin-top: 15px;
+}
+
+.speed_selector {
+    margin-top: 15px;
 }
