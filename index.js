@@ -3,23 +3,21 @@ const LEFT = 37;
 const UP = 38;
 const RIGHT = 39;
 const DOWN = 40;
-const PLAY = 1;
-const PAUSE = 2;
-const INIT_LENGTH = 5;
-const LENGTH_DELTA = 5;
+const INIT_SNAKE_LENGTH = 5;
+const SNAKE_LENGTH_DELTA = 5;
 const MAX_OPACITY = 0.5;
 const OPACITY_CYCLE = 25;
+const DIRECTIONS = [LEFT, UP, RIGHT, DOWN];
 // Remain constant through a game, but can change between games
 var WIDTH;
 var HEIGHT;
 var BOARD;
-// Change constantly throughout a game
-var direction;
-var length;
-var body;
-var position;
+// Change throughout a game
+var snakeDirection;
+var snakeLength;
+var snakeBody;
+var snakePosition;
 var interval;
-var state;
 var speed;
 var score;
 
@@ -89,36 +87,16 @@ Queue.prototype.length = function() {
   return this.data.length;
 };
 
-function resetDimensions() {
-  var widthElement = $('#width_value');
-  var heightElement = $('#height_value');
-  var width = parseInt(widthElement.val(), 10);
-  var height = parseInt(heightElement.val(), 10);
-  var maxWidth = parseInt(widthElement.attr('max'), 10);
-  var maxHeight = parseInt(heightElement.attr('max'), 10);
-  if (width > maxWidth || height > maxHeight) {
-    return false;
-  } else {
-    WIDTH = width;
-    HEIGHT = height;
-    return true;
-  }
-}
-
 function resetFields() {
-  document.title = 'Snake';
-  BOARD = [];
-  direction = DOWN;
-  length = INIT_LENGTH;
+  WIDTH = parseInt($('#width_value').val(), 10);
+  HEIGHT = parseInt($('#height_value').val(), 10);
   score = 0;
-  body = new Queue();
-  position = new Point(0, 0);
-  body.offer(position.clone());
 }
 
 function resetBoard() {
   var boardElement = $('#board');
   boardElement.empty();
+  BOARD = [];
   for (var y = 0; y < HEIGHT; y++) {
     var row = $('<tr />');
     BOARD.push([]);
@@ -133,17 +111,35 @@ function resetBoard() {
   }
 }
 
-function reset() {
-  if (!resetDimensions()) {
-    return;
-  }
-  resetFields();
-  resetBoard();
-  setSnakeSquare(position);
-  createNewTarget();
+function resetSnake() {
+  snakeDirection = DIRECTIONS[randRange(0, DIRECTIONS.length)];
+  snakeLength = INIT_SNAKE_LENGTH;
+  snakeBody = new Queue();
+  snakePosition = getEmptySquare();
+  snakeBody.offer(snakePosition.clone());
+  setSquareSnake(snakePosition);
 }
 
-function setSnakeSquare(point) {
+function resetInterval(state) {
+  if (interval != null) {
+    clearInterval(interval);
+  }
+  if (state) {
+    interval = setInterval(tick, speed);
+  } else {
+    interval = null;
+  }
+}
+
+function newGame() {
+  resetFields();
+  resetBoard();
+  resetSnake();
+  createNewTarget();
+  play();
+}
+
+function setSquareSnake(point) {
   var green = Math.floor(point.x * 256 / WIDTH);
   var blue = Math.floor(point.y * 256 / HEIGHT);
   var color = 'rgb(127, ' + green + ', ' + blue + ')';
@@ -151,7 +147,7 @@ function setSnakeSquare(point) {
                                  css('background-color', color);
 }
 
-function setEmptySquare(point) {
+function setSquareEmpty(point) {
   var square = BOARD[point.y][point.x];
   if (square.hasClass('snake')) {
     var green = Math.floor(point.x * 256 / WIDTH);
@@ -168,9 +164,17 @@ function setEmptySquare(point) {
   }
 }
 
-function setTargetSquare(point) {
+function setSquareTarget(point) {
   return BOARD[point.y][point.x].removeClass().addClass('target').
                                  css('background-color', 'rgb(255, 0, 0)');
+}
+
+function updateTitle(s) {
+  if (typeof s !== 'undefined') {
+    document.title = 'Snake | ' + s;
+  } else {
+    document.title = 'Snake';
+  }
 }
 
 function mod(n, m) {
@@ -186,7 +190,7 @@ function getEmptySquare() {
   var y = randRange(0, HEIGHT);
   var xStart = x;
   var yStart = y;
-  while (BOARD[y][x].hasClass('snake')) {
+  while (!BOARD[y][x].hasClass('empty')) {
     x++;
     if (x == WIDTH) {
       x = 0;
@@ -207,79 +211,83 @@ function createNewTarget() {
   if (point === null) {
     return false;
   } else {
-    setTargetSquare(point);
+    setSquareTarget(point);
     return true;
   }
 }
 
-function truncateBody() {
-  if (body.length() >= length) {
-    setEmptySquare(body.poll());
+function truncateSnakeBody() {
+  if (snakeBody.length() >= snakeLength) {
+    setSquareEmpty(snakeBody.poll());
   }
 }
 
-function updatePosition() {
-  var x = position.x;
-  var y = position.y;
-  switch (direction) {
+function updateSnakePosition() {
+  var x = snakePosition.x;
+  var y = snakePosition.y;
+  switch (snakeDirection) {
     case UP:
-      position.setY(mod(position.y - 1, HEIGHT));
+      snakePosition.setY(mod(snakePosition.y - 1, HEIGHT));
       break;
     case RIGHT:
-      position.setX(mod(position.x + 1, WIDTH));
+      snakePosition.setX(mod(snakePosition.x + 1, WIDTH));
       break;
     case DOWN:
-      position.setY(mod(position.y + 1, HEIGHT));
+      snakePosition.setY(mod(snakePosition.y + 1, HEIGHT));
       break;
     case LEFT:
-      position.setX(mod(position.x - 1, WIDTH));
+      snakePosition.setX(mod(snakePosition.x - 1, WIDTH));
       break;
     default:
-      alert('Fatal error: invalid direction: ' + direction);
+      alert('Fatal error: invalid direction: ' + snakeDirection);
       return;
   }
 }
 
-function checkNewPosition() {
-  var x = position.x;
-  var y = position.y;
+function checkSnakePosition() {
+  var x = snakePosition.x;
+  var y = snakePosition.y;
   if (BOARD[y][x].hasClass('snake')) {
-    alert('You lose!');
-    reset();
-    return;
+    alert('You lose! Press space to start a new game.');
+    over();
+    return false;
   }
   var scored = BOARD[y][x].hasClass('target');
-  setSnakeSquare(position);
+  setSquareSnake(snakePosition);
   if (scored) {
     if (createNewTarget()) {
-      length += LENGTH_DELTA;
+      snakeLength += SNAKE_LENGTH_DELTA;
       score++;
-      document.title = 'Snake (' + score + ')';
+      updateTitle(score);
     } else {
-      alert('You win!');
-      reset();
-      return;
+      alert('You win! Press space to start a new game.');
+      over();
+      return false;
     }
   }
+  return true;
 }
 
 function tick() {
-  truncateBody();
-  updatePosition();
-  checkNewPosition();
-  body.offer(position.clone());
+  truncateSnakeBody();
+  updateSnakePosition();
+  if (checkSnakePosition()) {
+    snakeBody.offer(snakePosition.clone());
+  }
 }
 
-function onKeyDown(event) {
-  if (state == PAUSE) {
-    return;
-  }
+function clearKeyEvents() {
+  return $(document).off('keydown').off('keypress');
+}
+
+function keyDownPlay(event) {
   switch (event.which) {
     case 'A'.charCodeAt(0):
     case 'a'.charCodeAt(0):
     case LEFT:
-      if (direction != RIGHT && direction != LEFT) {
-        direction = LEFT;
+      event.preventDefault();
+      if (snakeDirection != RIGHT && snakeDirection != LEFT) {
+        snakeDirection = LEFT;
       } else {
         return;
       }
@@ -287,8 +295,9 @@ function onKeyDown(event) {
     case 'W'.charCodeAt(0):
     case 'w'.charCodeAt(0):
     case UP:
-      if (direction != DOWN && direction != UP) {
-        direction = UP;
+      event.preventDefault();
+      if (snakeDirection != DOWN && snakeDirection != UP) {
+        snakeDirection = UP;
       } else {
         return;
       }
@@ -296,8 +305,9 @@ function onKeyDown(event) {
     case 'D'.charCodeAt(0):
     case 'd'.charCodeAt(0):
     case RIGHT:
-      if (direction != LEFT && direction != RIGHT) {
-        direction = RIGHT;
+      event.preventDefault();
+      if (snakeDirection != LEFT && snakeDirection != RIGHT) {
+        snakeDirection = RIGHT;
       } else {
         return;
       }
@@ -305,8 +315,9 @@ function onKeyDown(event) {
     case 'S'.charCodeAt(0):
     case 's'.charCodeAt(0):
     case DOWN:
-      if (direction != UP && direction != DOWN) {
-        direction = DOWN;
+      event.preventDefault();
+      if (snakeDirection != UP && snakeDirection != DOWN) {
+        snakeDirection = DOWN;
       } else {
         return;
       }
@@ -315,23 +326,49 @@ function onKeyDown(event) {
       return;
   }
   tick();
-  changeSpeed();
+  if (interval) {
+    resetInterval(true);
+  }
   event.preventDefault();
 }
 
-function onKeyPress(event) {
+function keyDownPause(event) {}
+
+function keyDownOver(event) {}
+
+function keyPressPlay(event) {
   var c = String.fromCharCode(event.which);
   switch (c) {
+    case ' ':
     case 'p':
     case 'P':
+      pause();
+      break;
+    default:
+      return;
+  }
+  event.preventDefault();
+}
+
+function keyPressPause(event) {
+  var c = String.fromCharCode(event.which);
+  switch (c) {
     case ' ':
-      if (interval != null) {
-        clearInterval(interval);
-        interval = null;
-        state = PAUSE;
-      } else {
-        changeSpeed();
-      }
+    case 'p':
+    case 'P':
+      play();
+      break;
+    default:
+      return;
+  }
+  event.preventDefault();
+}
+
+function keyPressOver(event) {
+  var c = String.fromCharCode(event.which);
+  switch (c) {
+    case ' ':
+      newGame();
       break;
     default:
       return;
@@ -343,18 +380,40 @@ function updateSpeed() {
   speed = Math.floor(1000 / $('#speed_value').val());
 }
 
-function changeSpeed() {
-  clearInterval(interval);
-  interval = setInterval(tick, speed);
-  state = PLAY;
+function over() {
+  updateTitle('Game over!');
+  resetInterval(false);
+  clearKeyEvents().keypress(keyPressOver).keydown(keyDownOver);
+}
+
+function pause() {
+  updateTitle('Paused');
+  resetInterval(false);
+  clearKeyEvents().keypress(keyPressPause).keydown(keyDownPause);
+}
+
+function play() {
+  updateTitle(score);
+  resetInterval(true);
+  clearKeyEvents().keypress(keyPressPlay).keydown(keyDownPlay);
+}
+
+function checkBounds(element) {
+  var min = parseInt(element.attr('min'), 10);
+  var max = parseInt(element.attr('max'), 10);
+  var val = parseInt(element.val(), 10);
+  if (isNaN(val)) {
+    element.val(Math.floor((max + min) / 2));
+  } else if (val > max) {
+    element.val(max);
+  } else if (val < min) {
+    element.val(min);
+  }
 }
 
 function onReady() {
-  reset();
   updateSpeed();
-  changeSpeed();
-  $(document).keydown(onKeyDown);
-  $(document).keypress(onKeyPress);
+  newGame();
 }
 
 $(document).ready(onReady);

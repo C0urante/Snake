@@ -18,9 +18,8 @@ td {
 }
 
 footer {
-    position: absolute;
-    bottom: 15px;
-    left: 15px;
+    margin-top: 50px;
+    margin-left: 20px;
 }
 
 #speed_value {

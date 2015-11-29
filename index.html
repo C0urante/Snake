@@ -10,12 +10,12 @@
     <div class="horizontal_center_outer">
         <div class="horizontal_center_inner">
             <div class="dimension_selector">
-                Width: <input type="number" id="width_value" min="1" max="64" value="50" />
-                Height: <input type="number" id="height_value" min="1" max="64" value="50" />
-                <button onclick="reset();this.blur();">Resize</button>
+                Width: <input type="number" id="width_value" min="5" max="100" onchange="checkBounds($(this));" value="50" />
+                Height: <input type="number" id="height_value" min="5" max="100" onchange="checkBounds($(this));" value="50" />
+                <button onclick="newGame(); this.blur();">Resize</button>
             </div>
             <div id="speed_selector">
-                Speed: <input type="range" id="speed_value" min="1" max="50" onchange="updateSpeed(); if(state === PLAY) { changeSpeed(); } this.blur();" value="25"/>
+                Speed: <input type="range" id="speed_value" min="1" max="50" onchange="updateSpeed(); resetInterval(!!interval); this.blur();" value="25"/>
             </div>
         </div>
     </div>
