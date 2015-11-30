@@ -398,12 +398,13 @@ function play() {
   clearKeyEvents().keypress(keyPressPlay).keydown(keyDownPlay);
 }
 
-function checkBounds(element) {
+function checkBounds(element, backup) {
+  backup = typeof backup !== 'undefined' ? backup : Math.floor((max + min) / 2);
   var min = parseInt(element.attr('min'), 10);
   var max = parseInt(element.attr('max'), 10);
   var val = parseInt(element.val(), 10);
   if (isNaN(val)) {
-    element.val(Math.floor((max + min) / 2));
+    element.val(backup);
   } else if (val > max) {
     element.val(max);
   } else if (val < min) {
