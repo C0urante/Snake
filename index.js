@@ -5,7 +5,7 @@ const RIGHT = 39;
 const DOWN = 40;
 const INIT_SNAKE_LENGTH = 5;
 const SNAKE_LENGTH_DELTA = 5;
-const MAX_OPACITY = 0.5;
+const MAX_OPACITY = 0.75;
 const OPACITY_CYCLE = 25;
 const DIRECTIONS = [LEFT, UP, RIGHT, DOWN];
 // Remain constant through a game, but can change between games
