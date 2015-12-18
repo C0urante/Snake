@@ -412,9 +412,20 @@ function checkBounds(element, backup) {
   }
 }
 
+function toggleGrid() {
+  var gridElement = $('#grid_value');
+  if (gridElement.prop('checked')) {
+    $('td').css({border: '1px solid #EEEEEE', width: '9px', height: '9px'});
+  } else {
+    $('td').css({border: 'none', width: '10px', height: '10px'});
+  }
+  gridElement.blur();
+}
+
 function onReady() {
   updateSpeed();
   newGame();
+  $('#grid_value').change(toggleGrid);
 }
 
 $(document).ready(onReady);

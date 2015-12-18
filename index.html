@@ -9,6 +9,9 @@
     <table id="board"></table>
     <div class="horizontal_center_outer">
         <div class="horizontal_center_inner">
+            <div class="grid_selector">
+                Grid: <input type="checkbox" id="grid_value" checked="checked"/>
+            </div>
             <div class="dimension_selector">
                 Width: <input type="number" id="width_value" min="5" max="100" onchange="checkBounds($(this), 50);" value="50" />
                 Height: <input type="number" id="height_value" min="5" max="100" onchange="checkBounds($(this), 50);" value="50" />

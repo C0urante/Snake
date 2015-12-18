@@ -1,20 +1,19 @@
 body {
-    background-color: #EEEEEE;
-}
-
-table, td {
-    border: none;
-    border-collapse: collapse;
     background-color: #FFFFFF;
 }
 
 table {
+    border-collapse: collapse;
+    border: 1px solid #EEEEEE;
+    background-color: #FFFFFF;
     margin: 0 auto;
 }
 
 td {
-    width: 8px;
-    height: 8px;
+    border: 1px solid #EEEEEE;
+    background-color: #FFFFFF;
+    width: 9px;
+    height: 9px;
 }
 
 footer {
@@ -34,10 +33,10 @@ footer {
     text-align: center;
 }
 
-.dimension_selector {
-    margin-top: 15px;
+.grid_selector {
+    margin-top: 10px;
 }
 
-.speed_selector {
-    margin-top: 15px;
+.dimension_selector {
+    margin-top: 10px;
 }
