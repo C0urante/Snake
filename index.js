@@ -109,6 +109,7 @@ function resetBoard() {
     }
     boardElement.append(row);
   }
+  redrawGrid();
 }
 
 function resetSnake() {
@@ -412,7 +413,7 @@ function checkBounds(element, backup) {
   }
 }
 
-function toggleGrid() {
+function redrawGrid() {
   var gridElement = $('#grid_value');
   if (gridElement.prop('checked')) {
     $('td').css({border: '1px solid #EEEEEE', width: '9px', height: '9px'});
@@ -425,7 +426,7 @@ function toggleGrid() {
 function onReady() {
   updateSpeed();
   newGame();
-  $('#grid_value').change(toggleGrid);
+  $('#grid_value').change(redrawGrid);
 }
 
 $(document).ready(onReady);
