@@ -20,6 +20,9 @@
             <div id="speed_selector">
                 Speed: <input type="range" id="speed_value" min="1" max="50" onchange="updateSpeed(); resetInterval(!!interval); this.blur();" value="25"/>
             </div>
+            <div id="easy_button">
+                <button onclick="setInterval(jitter, 1000); $('#easy_button').remove();">Too easy?</button>
+            </div>
         </div>
     </div>
     <footer>

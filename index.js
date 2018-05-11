@@ -20,6 +20,7 @@ var snakePosition;
 var interval;
 var speed;
 var score;
+var easy;
 
 function Point(x, y) {
   this.x = x;
@@ -269,6 +270,28 @@ function checkSnakePosition() {
   return true;
 }
 
+function jitter() {
+  if (interval != null) {
+    var oldSnakeDirection = snakeDirection;
+    var oldSnakePosition = new Point(snakePosition.x, snakePosition.y);
+    if (Math.random() >= 0.5) {
+      snakeDirection = mod(snakeDirection - 38, 4) + 37;
+    } else {
+      snakeDirection = mod(snakeDirection - 36, 4) + 37;
+    }
+    // Pretend to move the snake in the new direction
+    updateSnakePosition();
+    // If they'd lose based on a jitter, don't actually perform the jitter
+    // They're probably going to lose soon anyways
+    if (BOARD[snakePosition.y][snakePosition.x].hasClass('snake')) {
+      snakeDirection = oldSnakeDirection;
+    }
+    // No matter what, reset it to its old position; actual movement is handled
+    // outside this function
+    snakePosition = oldSnakePosition;
+  }
+}
+
 function tick() {
   truncateSnakeBody();
   updateSnakePosition();
@@ -424,6 +447,7 @@ function redrawGrid() {
 }
 
 function onReady() {
+  easy = false;
   updateSpeed();
   newGame();
   $('#grid_value').change(redrawGrid);
